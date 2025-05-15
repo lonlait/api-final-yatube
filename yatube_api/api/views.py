@@ -4,7 +4,9 @@ from rest_framework import viewsets, permissions, filters
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from posts.models import Post, Follow, Group
-from .serializers import PostSerializer, CommentSerializer, FollowSerializer, GroupSerializer
+from .serializers import (
+    PostSerializer, CommentSerializer, FollowSerializer, GroupSerializer
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
@@ -51,7 +53,9 @@ class PostViewSet(BaseModelViewSet):
     def create(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             from rest_framework.exceptions import NotAuthenticated
-            raise NotAuthenticated('Authentication credentials were not provided.')
+            raise NotAuthenticated(
+                'Authentication credentials were not provided.'
+            )
         return super().create(request, *args, **kwargs)
 
 
@@ -75,7 +79,9 @@ class CommentViewSet(BaseModelViewSet):
     def create(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             from rest_framework.exceptions import NotAuthenticated
-            raise NotAuthenticated('Authentication credentials were not provided.')
+            raise NotAuthenticated(
+                'Authentication credentials were not provided.'
+            )
         return super().create(request, *args, **kwargs)
 
 
