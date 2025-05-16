@@ -108,19 +108,17 @@ SIMPLE_JWT = {
 }
 
 DJOSER = { 
-    'LOGIN_FIELD': 'email', 
-    'HIDE_USERS': False, 
-    'SERIALIZERS': { 
-        'user_create': 'api.serializers.CustomUserCreateSerializer', 
-        'user': 'api.serializers.CustomUserSerializer', 
-        'current_user': 'api.serializers.CustomUserSerializer', 
-    }, 
-    'PERMISSIONS': { 
-        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'], 
-        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'], 
-    }, 
-} 
-
-
+    'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
+    'SERIALIZERS': {
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
+    },
+    'PERMISSIONS': {
+        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
