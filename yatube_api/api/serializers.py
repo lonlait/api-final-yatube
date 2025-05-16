@@ -1,13 +1,27 @@
-# Django imports
 from django.contrib.auth import get_user_model
-
-# DRF imports
 from rest_framework import serializers
 
 # Local imports
 from posts.models import Comment, Post, Follow, Group
 
 User = get_user_model()
+
+
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name')
+
+
+class CustomUserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -54,10 +68,6 @@ class FollowSerializer(serializers.ModelSerializer):
         if user == value:
             raise serializers.ValidationError(
                 'Нельзя подписаться на самого себя!'
-            )
-        if user.follower.filter(following=value).exists():
-            raise serializers.ValidationError(
-                'Вы уже подписаны на этого пользователя.'
             )
         return value
 

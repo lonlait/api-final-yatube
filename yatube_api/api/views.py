@@ -1,8 +1,5 @@
-# Django imports
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-
-# DRF imports
 from rest_framework import viewsets, filters
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.permissions import (
