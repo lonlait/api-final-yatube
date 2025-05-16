@@ -1,36 +1,17 @@
-from rest_framework import serializers
+# Django imports
 from django.contrib.auth import get_user_model
+
+# DRF imports
+from rest_framework import serializers
+
+# Local imports
 from posts.models import Comment, Post, Follow, Group
 
 User = get_user_model()
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели пользователя."""
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name')
-
-
-class CustomUserCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания пользователя."""
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'email', 'password')
-        extra_kwargs = {'password': {'write_only': True}}
-
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
-
-
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
-    group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all(),
-        required=False,
-        allow_null=True
-    )
 
     class Meta:
         model = Post
@@ -39,15 +20,19 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
-    post = serializers.ReadOnlyField(source='post.id')
 
     class Meta:
         model = Comment
         fields = ('id', 'author', 'text', 'created', 'post')
+        read_only_fields = ('post',)
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
+    user = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
     following = serializers.SlugRelatedField(
         slug_field='username',
         queryset=User.objects.all()
@@ -56,12 +41,23 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = ('user', 'following')
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=['user', 'following'],
+                message='Вы уже подписаны на этого пользователя.'
+            )
+        ]
 
     def validate_following(self, value):
         user = self.context['request'].user
         if user == value:
             raise serializers.ValidationError(
                 'Нельзя подписаться на самого себя!'
+            )
+        if user.follower.filter(following=value).exists():
+            raise serializers.ValidationError(
+                'Вы уже подписаны на этого пользователя.'
             )
         return value
 

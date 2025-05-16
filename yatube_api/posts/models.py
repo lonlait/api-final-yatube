@@ -1,3 +1,4 @@
+# Django imports
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -19,8 +20,13 @@ class Post(models.Model):
     image = models.ImageField(
         upload_to='posts/', null=True, blank=True)
 
+    class Meta:
+        ordering = ['-pub_date']
+        verbose_name = 'Пост'
+        verbose_name_plural = 'Посты'
+
     def __str__(self):
-        return self.text
+        return self.text[:15]
 
 
 class Group(models.Model):
